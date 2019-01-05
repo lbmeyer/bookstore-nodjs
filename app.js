@@ -16,7 +16,7 @@ app.engine(
     extname: 'hbs'
   })
 );
-app.set('view engine', 'hbs');
+app.set('view engine', 'ejs');
 // app.set('view engine', 'pug');
 
 // Default location of views
