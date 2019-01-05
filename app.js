@@ -7,17 +7,7 @@ const expressHandlebars = require('express-handlebars');
 const app = express();
 
 // Use templating engine
-app.engine(
-  'hbs',
-  expressHandlebars({
-    layoutsDir: 'views/layouts/',
-    defaultLayout: 'main-layout',
-    // define extension name for main-layout file
-    extname: 'hbs'
-  })
-);
-app.set('view engine', 'hbs');
-// app.set('view engine', 'pug');
+app.set('view engine', 'ejs');
 
 // Default location of views
 // (not explicitly required if views folder is in root and called 'views')
