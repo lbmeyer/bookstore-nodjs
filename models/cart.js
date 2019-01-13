@@ -43,6 +43,9 @@ module.exports = class Cart {
       const updatedCart = { ...JSON.parse(fileContent) };
       // find how many of a product we have in cart
       const product = updatedCart.products.find(prod => prod.id === id);
+      // check to see if product exists first before doing updates
+      if (!product) return;
+      
       const productQty = product.qty;
       updatedCart.products = updatedCart.products.filter(
         prod => prod.id !== id
@@ -53,6 +56,17 @@ module.exports = class Cart {
       fs.writeFile(p, JSON.stringify(updatedCart), err => {
         console.log(err);
       });
+    });
+  }
+
+  static getCart(cb) {
+    fs.readFile(p, (err, fileContent) => {
+      const cart = JSON.parse(fileContent);
+      if (err) {
+        cb(null);
+      } else {
+        cb(cart);
+      }
     });
   }
 };
