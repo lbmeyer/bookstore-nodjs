@@ -14,13 +14,19 @@ exports.postAddProduct = (req, res, next) => {
   const description = req.body.description;
   const price = req.body.price;
 
-  Product.create({
-    title: title,
-    price: price,
-    imageUrl: imageUrl,
-    description: description
-  })
-    .then(result => console.log(result))
+  // Make use of BelongsTo association method create (create+Product)
+  // in order to associate Product with User via fk (userId)
+  req.user
+    .createProduct({
+      title: title,
+      price: price,
+      imageUrl: imageUrl,
+      description: description
+    })
+    .then(result => {
+      console.log(result);
+      res.redirect('/admin/products');
+    })
     .catch(err => console.log(err));
 };
 
@@ -34,8 +40,12 @@ exports.getEditProduct = (req, res, next) => {
   }
 
   const prodId = req.params.productId;
-  Product.findById(prodId)
-    .then(product => {
+  // Find products for logged in user
+  // ...returns an array
+  req.user.getProducts({ where: { id: prodId } })
+  // Product.findById(prodId)
+    .then(products => {
+      const product = products[0];
       res.render('admin/edit-product', {
         pageTitle: 'Edit Product',
         path: '/admin/edit-product',
@@ -70,7 +80,8 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.findAll()
+  req.user.getProducts()
+  // Product.findAll()
     .then(products => {
       res.render('admin/products', {
         prods: products,
@@ -83,6 +94,13 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.deleteById(prodId);
-  res.redirect('/admin/products');
+  Product.findById(prodId)
+    .then(product => {
+      return product.destroy();
+    })
+    .then(result => {
+      console.log('Destroyed Product');
+      res.redirect('/admin/products');
+    })
+    .catch(err => console.log(err));
 };
